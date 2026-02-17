@@ -3,20 +3,24 @@ import random
 
 class Pipe:
     WIDTH = 100
-    def __init__(self, x, win_height, gap=350, velY=2, velX=6):
+    def __init__(self, x, win_height, gap_min=400, gap_max=400, velY=2, velX=4, seed = random.randint(0, 1000000)):
+        self.rng = random.Random(seed)
+
         self.x = x
         self.win_height = win_height
-        self.gap = gap
-        self.velY = velY
+        self.gap = self.rng.randrange(gap_min, gap_max + 1)
+        self.velY = self.rng.uniform(0.7 * velY, velY) * self.rng.choice([-1, 1])
         self.velX = velX
         
         self.gap_pos = 0 
         
         self.passed = False
+
+
         self.set_height()
 
     def set_height(self):
-        self.gap_pos = random.randrange(
+        self.gap_pos = self.rng.randrange(
             int(self.win_height * 0.1), 
             int(self.win_height * 0.9 - self.gap)
         )

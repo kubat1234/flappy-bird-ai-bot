@@ -1,89 +1,98 @@
+import pickle
 import pygame
 import os
-from src.bird import Bird
-from src.pipe import Pipe
+from src.game import GameSettings, PlayableGame, ReplayGame
+import sys
+import argparse
 
-WIN_WIDTH = 1000
-WIN_HEIGHT = 800
-BASE_HEIGHT = 20
-FPS = 60
-
-def draw_window(win, bird, pipes):
-    win.fill((135, 206, 235))
-    
-    bird.draw(win)
-    
-    for pipe in pipes:
-        pipe.draw(win)
-
-    win.fill((150, 75, 0), (0, WIN_HEIGHT - BASE_HEIGHT, WIN_WIDTH, BASE_HEIGHT))
-    
-    pygame.display.flip()
-
-def main():
-    pygame.init()
-    
-    win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.DOUBLEBUF | pygame.HWSURFACE)
-    pygame.display.set_caption("Flappy Bird")
-    
+def show_menu(screen):
     clock = pygame.time.Clock()
+    font_large = pygame.font.Font(None, 74)
+    font_small = pygame.font.Font(None, 36)
     
-    bird = Bird(WIN_WIDTH // 4, WIN_HEIGHT // 2)
-
-    PIPE_DISTANCE = 300
-    pipes = [Pipe(WIN_WIDTH + Pipe.WIDTH, WIN_HEIGHT)]
-    score = 0
-    
-    game_active = True
-    run = True
-    while run:
-        clock.tick(FPS)
+    while True:
+        screen.fill((135, 206, 235))  # Niebieskie tło
+        
+        title = font_large.render("Flappy Bird", True, (255, 255, 255))
+        title_rect = title.get_rect(center=(screen.get_width() // 2, 150))
+        screen.blit(title, title_rect)
+        
+        start_text = font_small.render("Naciśnij SPACJĘ aby zacząć", True, (255, 255, 255))
+        start_rect = start_text.get_rect(center=(screen.get_width() // 2, 300))
+        screen.blit(start_text, start_rect)
+        
+        quit_text = font_small.render("Naciśnij ESC aby wyjść", True, (255, 255, 255))
+        quit_rect = quit_text.get_rect(center=(screen.get_width() // 2, 350))
+        screen.blit(quit_text, quit_rect)
+        
+        pygame.display.flip()
+        clock.tick(30)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-            
+                return False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    run = False
                 if event.key == pygame.K_SPACE:
-                    if game_active:
-                        bird.jump()
-                    else:
-                        main()
-            
+                    return True
+                if event.key == pygame.K_ESCAPE:
+                    return False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                bird.jump()
+                return True
+
+def main():
+    parser = argparse.ArgumentParser(description='Flappy Bird Game')
+    parser.add_argument('difficulty', nargs='?', default='default', 
+                        help='Poziom trudności')
+    parser.add_argument('-r', '--replay', type=str, 
+                        help='Odtwórz zapisaną grę z pliku')
+    
+    args = parser.parse_args()
+
+    pygame.init()
+    screen = pygame.display.set_mode((1000, 800))
+    pygame.display.set_caption("Flappy Bird")
+
+    if args.replay:
+        replay_file = args.replay
+        replay_mode = True
+        print(f"Tryb replay: {replay_file}")
+    else:
+        replay_mode = False
         
-        if game_active or bird.y < WIN_HEIGHT - bird.rect.height - BASE_HEIGHT:
-            bird.move()
+        difficulty = args.difficulty
+        
+        settings_file = f'difficulties/{difficulty}.yaml'
+        
+        try:
+            settings = GameSettings.from_file(settings_file)
+            print(f"Wczytano ustawienia z: {settings_file}")
+        except FileNotFoundError:
+            settings = GameSettings()
 
-        if bird.y + bird.rect.height >= WIN_HEIGHT - BASE_HEIGHT or bird.y < 0:
-            game_active = False
-        if game_active:
-            rem = []
-            add_pipe = False
+    running = True
+    while running:
+        if not replay_mode and not show_menu(screen):
+            break
+        if replay_mode:
+            game = ReplayGame(screen, replay_file)
+        else:
+            game = PlayableGame(screen, settings=settings)
+        result = game.run()
 
-            for pipe in pipes:
-                pipe.move()
-                
-                if pipe.collide(bird):
-                    game_active = False
-                    
-                if pipe.x + Pipe.WIDTH < 0:
-                    rem.append(pipe)
-                
-                if pipes[-1].x < WIN_WIDTH - PIPE_DISTANCE:
-                    add_pipe = True
-
-            if add_pipe:
-                score += 1
-                pipes.append(Pipe(WIN_WIDTH + Pipe.WIDTH, WIN_HEIGHT))
-
-            for r in rem:
-                pipes.remove(r)
-
-        draw_window(win, bird, pipes)
+        if result == 'quit':
+            break
+        elif result == 'restart':
+            continue
+        elif result == 'save' and not replay_mode:
+            if not os.path.exists('saves'):
+                os.makedirs('saves')
+            save_number = 1
+            while os.path.exists(f'saves/save{save_number}.pkl'):
+                save_number += 1
+            
+            filename = f'saves/save{save_number}.pkl'
+            game.save_game(filename)
+            print(f"Gra zapisana jako: {filename}")
 
     pygame.quit()
 
