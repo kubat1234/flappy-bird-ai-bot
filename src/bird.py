@@ -21,6 +21,9 @@ class Bird:
         
         self.rect = self.img.get_rect(topleft=(x, y))
         self.alive = True
+        self.score = 0
+
+        self.pipes_passed = set()
 
     def jump(self):
         if self.alive:

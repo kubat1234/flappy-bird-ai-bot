@@ -44,7 +44,6 @@ class Game:
         self.rng = random.Random(seed)
 
         self.pipes = [Pipe(self.win.get_width() + Pipe.WIDTH, self.win.get_height(), seed = self.rng.randint(0, 1000000), velX=self.PIPE_VELX, velY=self.PIPE_VELY, gap_min=self.settings.GAP_MIN, gap_max=self.settings.GAP_MAX)]
-        self.score = 0
 
 
     def draw_window(self):
@@ -57,6 +56,10 @@ class Game:
             bird.draw(self.win)
         
         self.win.fill((150, 75, 0), (0, self.win.get_height() - self.BASE_HEIGHT, self.win.get_width(), self.BASE_HEIGHT))
+
+        font = pygame.font.Font(None, 70)
+        score_text = font.render(str(self.birds[0].score), True, (0, 0, 0))
+        self.win.blit(score_text, (10, 10))
         
         pygame.display.flip()
 
@@ -98,6 +101,8 @@ class Game:
                         if pipe.collide(bird):
                             bird.die()
                             birds_alive -= 1
+                        if pipe.passed(bird):
+                            bird.score += 1
                         
                     if pipe.x + Pipe.WIDTH < 0:
                         rem.append(pipe)
@@ -107,7 +112,6 @@ class Game:
                         pipe_distance = self.rng.randint(self.settings.DISTANCE_MIN, self.settings.DISTANCE_MAX)
 
                 if add_pipe:
-                    self.score += 1
                     self.pipes.append(Pipe(self.win.get_width() + Pipe.WIDTH, self.win.get_height(), seed = self.rng.randint(0, 1000000), velX=self.PIPE_VELX, velY=self.PIPE_VELY, gap_min=self.settings.GAP_MIN, gap_max=self.settings.GAP_MAX))
 
                 for r in rem:

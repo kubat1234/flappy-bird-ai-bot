@@ -13,9 +13,6 @@ class Pipe:
         self.velX = velX
         
         self.gap_pos = 0 
-        
-        self.passed = False
-
 
         self.set_height()
 
@@ -43,5 +40,11 @@ class Pipe:
         pipe_bottom_rect = pygame.Rect(self.x, self.gap_pos + self.gap, self.WIDTH, self.win_height)
         
         if pipe_top_rect.colliderect(bird.rect) or pipe_bottom_rect.colliderect(bird.rect):
+            return True
+        return False
+    
+    def passed(self, bird):
+        if self not in bird.pipes_passed and bird.rect.left > self.x + self.WIDTH:
+            bird.pipes_passed.add(self)
             return True
         return False
