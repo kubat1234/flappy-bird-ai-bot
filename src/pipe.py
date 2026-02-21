@@ -18,14 +18,14 @@ class Pipe:
 
     def set_height(self):
         self.gap_pos = self.rng.randrange(
-            int(self.win_height * 0.1), 
-            int(self.win_height * 0.9 - self.gap)
+            int(self.win_height * 0.2), 
+            int(self.win_height * 0.8 - self.gap)
         )
         
     def move(self):
         self.x -= self.velX
         self.gap_pos += self.velY
-        if self.gap_pos + self.gap > self.win_height * 0.9 or self.gap_pos < self.win_height * 0.1:
+        if self.gap_pos + self.gap > self.win_height * 0.8 or self.gap_pos < self.win_height * 0.2:
             self.velY *= -1
 
     def draw(self, win):
