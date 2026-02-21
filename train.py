@@ -5,7 +5,6 @@ import pygame
 from src.game import GameSettings, TrainGame
 import sys
 import argparse
-    
 
 def main():
     parser = argparse.ArgumentParser(description='Flappy Bird Game')
@@ -31,8 +30,11 @@ def main():
     num_generations = 50
 
     def eval_genomes(genomes, config):
-        for _ in range(5):
-            game = TrainGame(screen, random.randint(0, 1000000), genomes, config=config, settings=GameSettings.from_file('difficulties/custom.yaml'))
+        # game = TrainGame(screen, random.randint(0, 999999), genomes, config, settings=GameSettings.from_file(f'difficulties/custom.yaml'))
+        for genome_id, genome in genomes:
+            genome.fitness = 0
+        for _ in range(1):
+            game = TrainGame(screen, random.randint(0, 999999), genomes, config, settings=GameSettings.from_file(f'difficulties/custom.yaml'))
             result = game.run()
             if result == 'quit':
                 pygame.quit()

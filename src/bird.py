@@ -93,7 +93,7 @@ class AIBird(SavableBird):
         self.genome = genome
         self.config = config
         self.model = neat.nn.FeedForwardNetwork.create(genome, config)
-        self.genome.fitness = 0
+        # self.genome.fitness = 0
         self.pipes = pipes
 
     def move(self):
@@ -109,12 +109,12 @@ class AIBird(SavableBird):
             self.y,
             self.vel,
             self.since_last_jump,
-            self.pipes[0].x - self.x,
+            self.pipes[0].x + self.pipes[0].WIDTH - self.x,
             self.pipes[0].gap_pos - self.y,
             self.pipes[0].gap_pos + self.pipes[0].gap - self.y,
             self.pipes[0].velX,
             self.pipes[0].velY,
-            len(self.pipes) > 1 and self.pipes[1].x - self.x or 1000,
+            len(self.pipes) > 1 and self.pipes[1].x + self.pipes[1].WIDTH - self.x or 1000,
             len(self.pipes) > 1 and self.pipes[1].gap_pos - self.y or 0,
             len(self.pipes) > 1 and self.pipes[1].gap_pos + self.pipes[1].gap - self.y or 0,
             len(self.pipes) > 1 and self.pipes[1].velX or 0,

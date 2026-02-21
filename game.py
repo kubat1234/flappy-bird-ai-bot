@@ -1,4 +1,4 @@
-from random import random
+import random
 
 import pygame
 import os
@@ -29,7 +29,7 @@ def main():
 
     running = True
     while running:
-        game = PlayableGame(screen, seed=random.randint(0, 1000000), settings=settings)
+        game = PlayableGame(screen, random.randint(0, 1000000), settings)
         result = game.run()
 
         if result == 'quit':

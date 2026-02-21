@@ -3,7 +3,7 @@ import random
 import neat
 import pygame
 import os
-from src.game import BotGame, GameSettings, PlayableGame, ReplayGame, TrainGame
+from src.game import BotGame, GameSettings, BenchmarkGame
 import sys
 import argparse
 
@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description='Flappy Bird Game')
     parser.add_argument('difficulty', nargs='?', default='default', 
                         help='Poziom trudności')
+    parser.add_argument('--benchmark', '-b',nargs='?', type=int, default=None, const=1, help='Uruchomienie w trybie benchmarku (uruchomi grę 10 razy i poda średni wynik)')
     
     args = parser.parse_args()
 
@@ -39,8 +40,20 @@ def main():
     with open(genome_file, "rb") as f:
         genome = pickle.load(f)
 
-    game = BotGame(screen, random.randint(0, 1000000), genome, config, settings=settings)
-    game.run()
+    if args.benchmark is not None:
+        total_score = 0
+        runs = args.benchmark
+        for _ in range(runs):
+            game = BenchmarkGame(screen, random.randint(0, 1000000), genome, config, settings=settings)
+            score = game.run()
+            total_score += score
+            print(f"Run {_ + 1}: Score = {score}")
+        average_score = total_score / runs
+        print(f"Average Score over {runs} runs: {average_score}")
+        pygame.quit()
+    else:
+        game = BotGame(screen, random.randint(0, 1000000), genome, config, settings=settings)
+        game.run()
 
     pygame.quit()
 
