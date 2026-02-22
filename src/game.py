@@ -187,8 +187,7 @@ class TrainGame(Game):
         pipe_distance = self.settings.DISTANCE
         
         while birds_alive > 0:
-            # self.clock.tick(self.FPS * 20)
-            # self.clock.tick(0)
+            self.clock.tick(0)
 
             for event in pygame.event.get():
                 result = self.handle_input(event)
@@ -313,7 +312,6 @@ class BenchmarkGame(Game):
         pipe_distance = self.settings.DISTANCE
         
         while birds_alive > 0:
-            # self.clock.tick(self.FPS)
             self.clock.tick(0)
 
             for bird in self.birds:

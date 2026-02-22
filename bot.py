@@ -9,9 +9,11 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description='Flappy Bird Game')
-    parser.add_argument('difficulty', nargs='?', default='default', 
+    parser.add_argument('file', help='Plik z zapisanym genomem')
+    parser.add_argument('--difficulty', '-d', nargs='?', default='easy', 
                         help='Poziom trudności')
     parser.add_argument('--benchmark', '-b',nargs='?', type=int, default=None, const=1, help='Uruchomienie w trybie benchmarku (uruchomi grę 10 razy i poda średni wynik)')
+    parser.add_argument('--fps', '-f', type=int, default=60, help='Ustawienie FPS (domyślnie 60 FPS)')
     
     args = parser.parse_args()
 
@@ -30,7 +32,7 @@ def main():
     except FileNotFoundError:
         settings = GameSettings()
 
-    genome_file = "best_bird.pkl"
+    genome_file = args.file
     config_file = 'config-neat.txt'
 
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -53,6 +55,7 @@ def main():
         pygame.quit()
     else:
         game = BotGame(screen, random.randint(0, 1000000), genome, config, settings=settings)
+        game.FPS = args.fps
         game.run()
 
     pygame.quit()

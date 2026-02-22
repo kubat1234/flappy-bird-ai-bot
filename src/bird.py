@@ -80,6 +80,10 @@ class ReplayBird(Bird):
     def __init__(self, win, move_history):
         super().__init__(win)
         self.move_history = move_history
+    
+    def die(self):
+        self.alive = False
+        self.visible = False
 
     def move(self):
         if self.move_history and self.tick == self.move_history[0]:
@@ -93,7 +97,6 @@ class AIBird(SavableBird):
         self.genome = genome
         self.config = config
         self.model = neat.nn.FeedForwardNetwork.create(genome, config)
-        # self.genome.fitness = 0
         self.pipes = pipes
 
     def move(self):

@@ -5,6 +5,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description='Flappy Bird Game')
     parser.add_argument('file', nargs='?', default=None, help='Plik replay do odtworzenia')
+    parser.add_argument('--fps', '-f', type=int, default=60, help='Ustawienie FPS (domyślnie 60 FPS)')
     
     args = parser.parse_args()
 
@@ -15,6 +16,7 @@ def main():
     replay_file = args.file
 
     game = ReplayGame(screen, replay_file)
+    game.FPS = args.fps
     game.run()
 
     pygame.quit()
