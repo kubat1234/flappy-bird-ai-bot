@@ -25,7 +25,7 @@ bias_mutate_power       = 0.5
 bias_mutate_rate        = 0.7
 bias_replace_rate       = 0.1
 
-# node response options (TEGO BRAKOWAŁO)
+# node response options
 response_init_mean      = 1.0
 response_init_stdev     = 0.0
 response_max_value      = 30.0
@@ -84,5 +84,5 @@ compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
-max_stagnation       = 30
+max_stagnation       = 15
 species_elitism      = 2
